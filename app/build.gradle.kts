@@ -1,6 +1,13 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+    id("redacted")
+}
+
+// Configuration of custom Gradle plugin
+// (and by extension, the transform)
+redacted {
+    enabled.set(true)
 }
 
 android {
@@ -29,18 +36,20 @@ android {
             )
         }
     }
+
+    val compatibility = JavaVersion.VERSION_1_8
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = compatibility
+        targetCompatibility = compatibility
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = compatibility.toString()
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
     packaging {
         resources {
@@ -50,7 +59,12 @@ android {
 }
 
 dependencies {
+    implementation(projects.api)
+
+    debugImplementation(libs.ui.tooling)
+    debugImplementation(libs.ui.test.manifest)
     implementation(libs.core.ktx)
+    implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
     implementation(platform(libs.compose.bom))
@@ -58,11 +72,16 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
+    implementation(libs.jrand) {
+        exclude(group = "me.xdrop", module = "jrand-annotation-processor")
+        exclude(group = "me.xdrop", module = "jrand-core")
+        exclude(group = "me.xdrop", module = "jrand-test")
+    }
+
     testImplementation(libs.junit)
+
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
-    debugImplementation(libs.ui.tooling)
-    debugImplementation(libs.ui.test.manifest)
 }

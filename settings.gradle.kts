@@ -1,3 +1,7 @@
+@file:Suppress("UnstableApiUsage")
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     repositories {
         google()
@@ -15,4 +19,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "DK23"
 includeBuild("transformer")
+include(":api")
 include(":app")
